@@ -26,7 +26,12 @@
       // Set *default* container specific settings.json values on container create.
       "settings": {
         "python.defaultInterpreterPath": "/usr/local/bin/python"
-      }
+	},
+	"extensions": [
+		"eamodio.gitlens",
+		"donjayamanne.githistory",
+		"mhutchie.git-graph"
+	]
     }
   },
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
