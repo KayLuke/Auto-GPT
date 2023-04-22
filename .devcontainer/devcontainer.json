@@ -30,7 +30,8 @@
 	"extensions": [
 		"eamodio.gitlens",
 		"donjayamanne.githistory",
-		"mhutchie.git-graph"
+		"mhutchie.git-graph",
+		"DanielSanMedium.dscodegpt"
 	]
     }
   },
