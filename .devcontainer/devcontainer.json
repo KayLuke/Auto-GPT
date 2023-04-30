@@ -28,10 +28,15 @@
         "python.defaultInterpreterPath": "/usr/local/bin/python"
 	},
 	"extensions": [
-		"eamodio.gitlens",
-		"donjayamanne.githistory",
+		"njpwerner.autodocstring",
+		"ms-azuretools.vscode-docker",
+		"GitHub.copilot",
+		"GitHub.copilot-labs",
+		"DanielSanMedium.dscodegpt",
 		"mhutchie.git-graph",
-		"DanielSanMedium.dscodegpt"
+		"eamodio.gitlens",
+		"ms-python.black-formatter",
+		"donjayamanne.githistory",
 	]
     }
   },
