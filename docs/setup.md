@@ -23,7 +23,7 @@ Get your OpenAI API key from: [https://platform.openai.com/account/api-keys](htt
 [openai/api limits]: https://platform.openai.com/docs/guides/rate-limits/overview#:~:text=Free%20trial%20users,RPM%0A40%2C000%20TPM
 
 !!! important
-    It's highly recommended that you keep keep track of your API costs on [the Usage page](https://platform.openai.com/account/usage).
+    It's highly recommended that you keep track of your API costs on [the Usage page](https://platform.openai.com/account/usage).
     You can also set limits on how much you spend on [the Usage limits page](https://platform.openai.com/account/billing/limits).
 
 ![For OpenAI API key to work, set up paid account at OpenAI API > Billing](./imgs/openai-api-key-billing-paid-account.png)
@@ -54,9 +54,15 @@ Get your OpenAI API key from: [https://platform.openai.com/account/api-keys](htt
             environment:
               MEMORY_BACKEND: ${MEMORY_BACKEND:-redis}
               REDIS_HOST: ${REDIS_HOST:-redis}
-            volumes:
-              - ./:/app
             profiles: ["exclude-from-up"]
+            volumes:
+              - ./auto_gpt_workspace:/app/auto_gpt_workspace
+              - ./data:/app/data
+              ## allow auto-gpt to write logs to disk
+              - ./logs:/app/logs
+              ## uncomment following lines if you have / want to make use of these files
+              #- ./azure.yaml:/app/azure.yaml
+              #- ./ai_settings.yaml:/app/ai_settings.yaml
           redis:
             image: "redis/redis-stack-server:latest"
 
