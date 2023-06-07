@@ -166,3 +166,4 @@ openai/
 CURRENT_BULLETIN.md
 ai_settings*.yaml
 auto-gpt*.json
+parked_plugins/Auto-GPT-Plugins/

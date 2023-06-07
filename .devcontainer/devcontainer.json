@@ -26,7 +26,7 @@
     "vscode": {
       // Set *default* container specific settings.json values on container create.
       "settings": {
-        "python.defaultInterpreterPath": "/usr/local/bin/python"
+        "python.defaultInterpreterPath": "/usr/local/bin/python",
         "python.testing.pytestEnabled": true,
         "python.testing.unittestEnabled": false
       },
@@ -37,18 +37,18 @@
         "ms-python.black-formatter",
         "ms-python.isort",
         "GitHub.vscode-pull-request-github",
-        "GitHub.copilot",
         "github.vscode-github-actions",
         "njpwerner.autodocstring",
         "ms-azuretools.vscode-docker",
-        "GitHub.copilot",
         "GitHub.copilot-labs",
         "DanielSanMedium.dscodegpt",
         "mhutchie.git-graph",
         "eamodio.gitlens",
         "ms-python.black-formatter",
         "donjayamanne.githistory",
-      ]
+        "GitHub.copilot-chat",
+        "GitHub.copilot-nightly"
+	]
     }
   },
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
