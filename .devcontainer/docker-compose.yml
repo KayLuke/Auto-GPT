@@ -10,3 +10,4 @@ services:
     tty: true
     volumes:
       - ../:/workspace/Auto-GPT
+      - ~/Documents/dev/python/Auto-GPT-Plugins:/workspace/Auto-GPT/plugins/Auto-GPT-Plugins
