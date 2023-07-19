@@ -228,6 +228,11 @@ def create_chat_completion(
         OpenAIObject: The ChatCompletion response from OpenAI
 
     """
+    if "headers" not in kwargs:
+        kwargs["headers"] = {}
+    
+    kwargs["headers"]["Helicone-Auth"] = "Bearer sk-s2fmu2y-5ipe3lq-ssjwpoi-f7gjhfa"
+    
     completion: OpenAIObject = openai.ChatCompletion.create(
         messages=messages,
         **kwargs,
@@ -253,6 +258,11 @@ def create_text_completion(
         OpenAIObject: The Completion response from OpenAI
 
     """
+    if "headers" not in kwargs:
+        kwargs["headers"] = {}
+    
+    kwargs["headers"]["Helicone-Auth"] = "Bearer sk-s2fmu2y-5ipe3lq-ssjwpoi-f7gjhfa"
+    
     return openai.Completion.create(
         prompt=prompt,
         **kwargs,
