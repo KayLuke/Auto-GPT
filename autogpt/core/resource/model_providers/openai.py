@@ -37,9 +37,21 @@ OpenAIChatParser = Callable[[str], dict]
 
 class OpenAIModelName(str, enum.Enum):
     ADA = "text-embedding-ada-002"
-    GPT3 = "gpt-3.5-turbo-0613"
+    # Temp Change (gpt-3.5-turbo):
+    # ---------------------------
+    # Changing the default gpt-4 model to gpt-4-0314 based on OpenAI's 
+    # July 20, 2023 announcement here;
+    # https://openai.com/blog/function-calling-and-other-api-updates
+    GPT3 = "gpt-3.5-turbo-0301"
     GPT3_16K = "gpt-3.5-turbo-16k-0613"
-    GPT4 = "gpt-4-0613"
+    
+    # Temp Change (gpt-4):
+    # ---------------------------
+    # Changing the default gpt-4 model to gpt-4-0314 based on OpenAI's 
+    # July 20, 2023 announcement here;
+    # https://openai.com/blog/function-calling-and-other-api-updates
+    GPT4 = "gpt-4-0314"
+    
     GPT4_32K = "gpt-4-32k-0613"
 
 

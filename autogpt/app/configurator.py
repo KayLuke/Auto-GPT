@@ -8,7 +8,7 @@ from colorama import Back, Fore, Style
 
 from autogpt import utils
 from autogpt.config import Config
-from autogpt.config.config import GPT_3_MODEL, GPT_4_MODEL
+from autogpt.core.resource.model_providers.openai import OpenAIModelName
 from autogpt.llm.api_manager import ApiManager
 from autogpt.logs import logger
 from autogpt.memory.vector import get_supported_memory_backends
@@ -83,18 +83,18 @@ def create_config(
     # Set the default LLM models
     if gpt3only:
         logger.typewriter_log("GPT3.5 Only Mode: ", Fore.GREEN, "ENABLED")
-        # --gpt3only should always use gpt-3.5-turbo, despite user's FAST_LLM config
-        config.fast_llm = GPT_3_MODEL
-        config.smart_llm = GPT_3_MODEL
+        # --gpt3only should always use OpenAIModelName.GPT3_16K, despite user's FAST_LLM config
+        config.fast_llm = OpenAIModelName.GPT3_16K
+        config.smart_llm = OpenAIModelName.GPT3_16K
     elif (
         gpt4only
-        and check_model(GPT_4_MODEL, model_type="smart_llm", config=config)
-        == GPT_4_MODEL
+        and check_model(OpenAIModelName.GPT4, model_type="smart_llm", config=config)
+        == OpenAIModelName.GPT4
     ):
         logger.typewriter_log("GPT4 Only Mode: ", Fore.GREEN, "ENABLED")
-        # --gpt4only should always use gpt-4, despite user's SMART_LLM config
-        config.fast_llm = GPT_4_MODEL
-        config.smart_llm = GPT_4_MODEL
+        # --gpt4only should always use OpenAIModelName.GPT4, despite user's SMART_LLM config
+        config.fast_llm = OpenAIModelName.GPT4
+        config.smart_llm = OpenAIModelName.GPT4
     else:
         config.fast_llm = check_model(config.fast_llm, "fast_llm", config=config)
         config.smart_llm = check_model(config.smart_llm, "smart_llm", config=config)
@@ -170,7 +170,7 @@ def check_model(
     model_type: Literal["smart_llm", "fast_llm"],
     config: Config,
 ) -> str:
-    """Check if model is available for use. If not, return gpt-3.5-turbo."""
+    """Check if model is available for use. If not, return OpenAIModelName.GPT3_16K."""
     openai_credentials = config.get_openai_credentials(model_name)
     api_manager = ApiManager()
     models = api_manager.get_models(**openai_credentials)
@@ -182,6 +182,6 @@ def check_model(
         "WARNING: ",
         Fore.YELLOW,
         f"You do not have access to {model_name}. Setting {model_type} to "
-        f"gpt-3.5-turbo.",
+        f"{OpenAIModelName.GPT3_16K}.",
     )
-    return "gpt-3.5-turbo"
+    return OpenAIModelName.GPT3_16K

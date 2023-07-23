@@ -71,9 +71,21 @@ OPEN_AI_CHAT_MODELS = {
 }
 # Set aliases for rolling model IDs
 chat_model_mapping = {
-    "gpt-3.5-turbo": "gpt-3.5-turbo-0613",
+    # Temp Change (gpt-3.5-turbo):
+    # ---------------------------
+    # Changing the default gpt-4 model to gpt-4-0314 based on OpenAI's 
+    # July 20, 2023 announcement here;
+    # https://openai.com/blog/function-calling-and-other-api-updates
+    "gpt-3.5-turbo": "gpt-3.5-turbo-0301",
     "gpt-3.5-turbo-16k": "gpt-3.5-turbo-16k-0613",
-    "gpt-4": "gpt-4-0613",
+    
+    # Temp Change (gpt-4):
+    # ---------------------------
+    # Changing the default gpt-4 model to gpt-4-0314 based on OpenAI's 
+    # July 20, 2023 announcement here;
+    # https://openai.com/blog/function-calling-and-other-api-updates
+    "gpt-4": "gpt-4-0314", 
+    
     "gpt-4-32k": "gpt-4-32k-0613",
 }
 for alias, target in chat_model_mapping.items():

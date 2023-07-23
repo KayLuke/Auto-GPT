@@ -4,23 +4,24 @@ from __future__ import annotations
 from typing import List, overload
 
 import tiktoken
+from autogpt.core.resource.model_providers.openai import OpenAIModelName
 
 from autogpt.llm.base import Message
 from autogpt.logs import logger
 
 
 @overload
-def count_message_tokens(messages: Message, model: str = "gpt-3.5-turbo") -> int:
+def count_message_tokens(messages: Message, model: str = OpenAIModelName.GPT3_16K) -> int:
     ...
 
 
 @overload
-def count_message_tokens(messages: List[Message], model: str = "gpt-3.5-turbo") -> int:
+def count_message_tokens(messages: List[Message], model: str = OpenAIModelName.GPT3_16K) -> int:
     ...
 
 
 def count_message_tokens(
-    messages: Message | List[Message], model: str = "gpt-3.5-turbo"
+    messages: Message | List[Message], model: str = OpenAIModelName.GPT3_16K
 ) -> int:
     """
     Returns the number of tokens used by a list of messages.
@@ -29,7 +30,7 @@ def count_message_tokens(
         messages (list): A list of messages, each of which is a dictionary
             containing the role and content of the message.
         model (str): The name of the model to use for tokenization.
-            Defaults to "gpt-3.5-turbo-0301".
+            Defaults to OpenAIModelName.GPT3_16K.
 
     Returns:
         int: The number of tokens used by the list of messages.

@@ -8,8 +8,9 @@ from unittest.mock import patch
 
 import pytest
 
-from autogpt.app.configurator import GPT_3_MODEL, GPT_4_MODEL, create_config
+from autogpt.app.configurator import create_config
 from autogpt.config import Config, ConfigBuilder
+from autogpt.core.resource.model_providers.openai import OpenAIModelName
 from autogpt.workspace.workspace import Workspace
 
 
@@ -207,7 +208,7 @@ azure_model_map:
 
 def test_create_config_gpt4only(config: Config) -> None:
     with mock.patch("autogpt.llm.api_manager.ApiManager.get_models") as mock_get_models:
-        mock_get_models.return_value = [{"id": GPT_4_MODEL}]
+        mock_get_models.return_value = [{"id": OpenAIModelName.GPT4}]
         create_config(
             config=config,
             continuous=False,
@@ -224,13 +225,13 @@ def test_create_config_gpt4only(config: Config) -> None:
             allow_downloads=False,
             skip_news=False,
         )
-        assert config.fast_llm == GPT_4_MODEL
-        assert config.smart_llm == GPT_4_MODEL
+        assert config.fast_llm == OpenAIModelName.GPT4
+        assert config.smart_llm == OpenAIModelName.GPT4
 
 
 def test_create_config_gpt3only(config: Config) -> None:
     with mock.patch("autogpt.llm.api_manager.ApiManager.get_models") as mock_get_models:
-        mock_get_models.return_value = [{"id": GPT_3_MODEL}]
+        mock_get_models.return_value = [{"id": OpenAIModelName.GPT3_16K}]
         create_config(
             config=config,
             continuous=False,
@@ -247,5 +248,5 @@ def test_create_config_gpt3only(config: Config) -> None:
             allow_downloads=False,
             skip_news=False,
         )
-        assert config.fast_llm == GPT_3_MODEL
-        assert config.smart_llm == GPT_3_MODEL
+        assert config.fast_llm == OpenAIModelName.GPT3_16K
+        assert config.smart_llm == OpenAIModelName.GPT3_16K

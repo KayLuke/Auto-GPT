@@ -13,12 +13,11 @@ from colorama import Fore
 from pydantic import Field, validator
 
 from autogpt.core.configuration.schema import Configurable, SystemSettings
+from autogpt.core.resource.model_providers.openai import OpenAIModelName
 from autogpt.plugins.plugins_config import PluginsConfig
 
 AZURE_CONFIG_FILE = "azure.yaml"
 PLUGINS_CONFIG_FILE = "plugins_config.yaml"
-GPT_4_MODEL = "gpt-4"
-GPT_3_MODEL = "gpt-3.5-turbo"
 
 
 class Config(SystemSettings, arbitrary_types_allowed=True):
@@ -50,8 +49,8 @@ class Config(SystemSettings, arbitrary_types_allowed=True):
     workspace_path: Optional[Path] = None
     file_logger_path: Optional[str] = None
     # Model configuration
-    fast_llm: str = "gpt-3.5-turbo"
-    smart_llm: str = "gpt-4"
+    fast_llm: str = OpenAIModelName.GPT3_16K
+    smart_llm: str = OpenAIModelName.GPT4
     temperature: float = 0
     openai_functions: bool = False
     embedding_model: str = "text-embedding-ada-002"
@@ -163,7 +162,7 @@ class Config(SystemSettings, arbitrary_types_allowed=True):
             self.fast_llm
             if not (
                 self.fast_llm == self.smart_llm
-                and self.fast_llm.startswith(GPT_4_MODEL)
+                and self.fast_llm.startswith(OpenAIModelName.GPT4)
             )
             else f"not_{self.fast_llm}"
         )
@@ -171,7 +170,7 @@ class Config(SystemSettings, arbitrary_types_allowed=True):
             self.smart_llm
             if not (
                 self.smart_llm == self.fast_llm
-                and self.smart_llm.startswith(GPT_3_MODEL)
+                and self.smart_llm.startswith(OpenAIModelName.GPT3_16K)
             )
             else f"not_{self.smart_llm}"
         )
