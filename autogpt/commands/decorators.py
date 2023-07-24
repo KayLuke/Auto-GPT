@@ -1,4 +1,5 @@
 import functools
+import os
 from pathlib import Path
 from typing import Callable
 
@@ -16,28 +17,13 @@ def sanitize_path_arg(arg_name: str):
                 f"Sanitized parameter '{arg_name}' absent or not annotated on function '{func.__name__}'"
             )
 
-        # Get position of agent parameter, in case it is passed as a positional argument
-        try:
-            agent_arg_index = list(func.__annotations__.keys()).index("agent")
-        except ValueError:
-            raise TypeError(
-                f"Parameter 'agent' absent or not annotated on function '{func.__name__}'"
-            )
-
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             logger.debug(f"Sanitizing arg '{arg_name}' on function '{func.__name__}'")
             logger.debug(f"Function annotations: {func.__annotations__}")
 
             # Get Agent from the called function's arguments
-            agent = kwargs.get(
-                "agent", len(args) > agent_arg_index and args[agent_arg_index]
-            )
-            logger.debug(f"Args: {args}")
-            logger.debug(f"KWArgs: {kwargs}")
-            logger.debug(f"Agent argument lifted from function call: {agent}")
-            if not isinstance(agent, Agent):
-                raise RuntimeError("Could not get Agent from decorated command's args")
+            agent = _get_agent_from_args(*args, **kwargs)
 
             # Sanitize the specified path argument, if one is given
             given_path: str | Path | None = kwargs.get(
@@ -62,3 +48,32 @@ def sanitize_path_arg(arg_name: str):
         return wrapper
 
     return decorator
+
+
+def run_in_workspace(func: Callable):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        agent = _get_agent_from_args(*args, **kwargs)
+
+        prev_dir = Path.cwd()
+        if not prev_dir.is_relative_to(str(agent.config.workspace_path)):
+            os.chdir(str(agent.config.workspace_path))
+        try:
+            return func(*args, **kwargs)
+        finally:
+            os.chdir(str(prev_dir))
+
+    return wrapper
+
+
+def _get_agent_from_args(*args, **kwargs) -> Agent:
+    agent = kwargs.get("agent", None)
+
+    if agent is None:
+        for arg in args:
+            if isinstance(arg, Agent):
+                return arg
+
+    if not isinstance(agent, Agent):
+        raise RuntimeError("Could not get Agent from decorated command's args")
+    return agent
