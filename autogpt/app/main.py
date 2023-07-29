@@ -131,7 +131,9 @@ def run_auto_gpt(
     )
 
     # HACK: doing this here to collect some globals that depend on the workspace.
-    config.file_logger_path = Workspace.set_file_logger_path(config, config.workspace_path)
+    config.file_logger_path = Workspace.set_file_logger_path(
+        config, config.workspace_path
+    )
 
     config.plugins = scan_plugins(config, config.debug_mode)
     # Create a CommandRegistry instance and scan default folder
@@ -370,23 +372,25 @@ def update_user(
     print_assistant_thoughts(ai_config.ai_name, assistant_reply_dict, config)
 
     if command_name is not None:
-        if config.speak_mode:
-            say_text(f"I want to execute {command_name}", config)
+        if not command_name.lower().startswith("error"):
+            if config.speak_mode:
+                say_text(f"I want to execute {command_name}", config)
 
-        # First log new-line so user can differentiate sections better in console
-        logger.typewriter_log("\n")
-        logger.typewriter_log(
-            "NEXT ACTION: ",
-            Fore.CYAN,
-            f"COMMAND = {Fore.CYAN}{remove_ansi_escape(command_name)}{Style.RESET_ALL}  "
-            f"ARGUMENTS = {Fore.CYAN}{command_args}{Style.RESET_ALL}",
-        )
-    elif command_name.lower().startswith("error"):
-        logger.typewriter_log(
-            "ERROR: ",
-            Fore.RED,
-            f"The Agent failed to select an action. " f"Error message: {command_name}",
-        )
+            # First log new-line so user can differentiate sections better in console
+            logger.typewriter_log("\n")
+            logger.typewriter_log(
+                "NEXT ACTION: ",
+                Fore.CYAN,
+                f"COMMAND = {Fore.CYAN}{remove_ansi_escape(command_name)}{Style.RESET_ALL}  "
+                f"ARGUMENTS = {Fore.CYAN}{command_args}{Style.RESET_ALL}",
+            )
+        else:
+            logger.typewriter_log(
+                "ERROR: ",
+                Fore.RED,
+                f"The Agent failed to select an action. "
+                f"Error message: {command_name}",
+            )
     else:
         logger.typewriter_log(
             "NO ACTION SELECTED: ",

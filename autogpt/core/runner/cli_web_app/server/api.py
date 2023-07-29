@@ -88,10 +88,12 @@ def bootstrap_agent(task, continuous_mode) -> Agent:
     command_registry = get_command_registry(config)
     config.memory_backend = "no_memory"
     config.workspace_path = Workspace.set_workspace_directory(config)
-    config.file_logger_path = Workspace.build_file_logger_path(config.workspace_path)
+    config.file_logger_path = Workspace.set_file_logger_path(
+        config, config.workspace_path
+    )
     ai_config = AIConfig(
         ai_name="Auto-GPT",
-        ai_role="a multi-purpose AI assistant.",
+        ai_role="a multi-purpose AI assistant that fulfills its GOALS.",
         ai_goals=[task],
     )
     ai_config.command_registry = command_registry
@@ -111,4 +113,18 @@ def get_command_registry(config: Config):
     ]
     for command_category in enabled_command_categories:
         command_registry.import_commands(command_category)
+
+    # Unregister commands that are incompatible with the current config
+    incompatible_commands = []
+    for command in command_registry.commands.values():
+        if callable(command.enabled) and not command.enabled(config):
+            command.enabled = False
+            incompatible_commands.append(command)
+
+    for command in incompatible_commands:
+        command_registry.unregister(command)
+        logger.debug(
+            f"Unregistering incompatible command: {command.name}, "
+            f"reason - {command.disabled_reason or 'Disabled by current config.'}"
+        )
     return command_registry

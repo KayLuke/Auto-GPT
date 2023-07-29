@@ -28,10 +28,12 @@ def bootstrap_agent(task, continuous_mode) -> Agent:
     command_registry = get_command_registry(config)
     config.memory_backend = "no_memory"
     config.workspace_path = Workspace.set_workspace_directory(config)
-    config.file_logger_path = Workspace.build_file_logger_path(config.workspace_path)
+    config.file_logger_path = Workspace.set_file_logger_path(
+        config, config.workspace_path
+    )
     ai_config = AIConfig(
         ai_name="Auto-GPT",
-        ai_role="a multi-purpose AI assistant.",
+        ai_role="a multi-purpose AI assistant that fulfills its GOALS.",
         ai_goals=[task],
     )
     ai_config.command_registry = command_registry
