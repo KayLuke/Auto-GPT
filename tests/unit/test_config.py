@@ -3,28 +3,29 @@ Test cases for the config class, which handles the configuration settings
 for the AI and ensures it behaves as a singleton.
 """
 import os
+from typing import Any
 from unittest import mock
 from unittest.mock import patch
 
 import pytest
 
-from autogpt.app.configurator import GPT_3_MODEL, GPT_4_MODEL, create_config
+from autogpt.app.configurator import create_config
 from autogpt.config import Config, ConfigBuilder
 from autogpt.workspace.workspace import Workspace
 
 
-def test_initial_values(config: Config):
+def test_initial_values(config: Config) -> None:
     """
     Test if the initial values of the config class attributes are set correctly.
     """
     assert config.debug_mode == False
     assert config.continuous_mode == False
     assert config.speak_mode == False
-    assert config.fast_llm == "gpt-3.5-turbo"
+    assert config.fast_llm == "gpt-3.5-turbo-16k"
     assert config.smart_llm == "gpt-4-0314"
 
 
-def test_set_continuous_mode(config: Config):
+def test_set_continuous_mode(config: Config) -> None:
     """
     Test if the set_continuous_mode() method updates the continuous_mode attribute.
     """
@@ -38,7 +39,7 @@ def test_set_continuous_mode(config: Config):
     config.continuous_mode = continuous_mode
 
 
-def test_set_speak_mode(config: Config):
+def test_set_speak_mode(config: Config) -> None:
     """
     Test if the set_speak_mode() method updates the speak_mode attribute.
     """
@@ -52,7 +53,7 @@ def test_set_speak_mode(config: Config):
     config.speak_mode = speak_mode
 
 
-def test_set_fast_llm(config: Config):
+def test_set_fast_llm(config: Config) -> None:
     """
     Test if the set_fast_llm() method updates the fast_llm attribute.
     """
@@ -66,7 +67,7 @@ def test_set_fast_llm(config: Config):
     config.fast_llm = fast_llm
 
 
-def test_set_smart_llm(config: Config):
+def test_set_smart_llm(config: Config) -> None:
     """
     Test if the set_smart_llm() method updates the smart_llm attribute.
     """
@@ -80,7 +81,7 @@ def test_set_smart_llm(config: Config):
     config.smart_llm = smart_llm
 
 
-def test_set_debug_mode(config: Config):
+def test_set_debug_mode(config: Config) -> None:
     """
     Test if the set_debug_mode() method updates the debug_mode attribute.
     """
@@ -95,9 +96,9 @@ def test_set_debug_mode(config: Config):
 
 
 @patch("openai.Model.list")
-def test_smart_and_fast_llms_set_to_gpt4(mock_list_models, config: Config):
+def test_smart_and_fast_llms_set_to_gpt4(mock_list_models: Any, config: Config) -> None:
     """
-    Test if models update to gpt-3.5-turbo if both are set to gpt-4.
+    Test if models update to gpt-3.5-turbo-16k if both are set to gpt-4.
     """
     fast_llm = config.fast_llm
     smart_llm = config.smart_llm
@@ -105,12 +106,12 @@ def test_smart_and_fast_llms_set_to_gpt4(mock_list_models, config: Config):
     config.fast_llm = "gpt-4"
     config.smart_llm = "gpt-4"
 
-    mock_list_models.return_value = {"data": [{"id": "gpt-3.5-turbo"}]}
+    mock_list_models.return_value = {"data": [{"id": "gpt-3.5-turbo-16k"}]}
 
     create_config(
         config=config,
         continuous=False,
-        continuous_limit=False,
+        continuous_limit=0,
         ai_settings_file="",
         prompt_settings_file="",
         skip_reprompt=False,
@@ -124,15 +125,15 @@ def test_smart_and_fast_llms_set_to_gpt4(mock_list_models, config: Config):
         skip_news=False,
     )
 
-    assert config.fast_llm == "gpt-3.5-turbo"
-    assert config.smart_llm == "gpt-3.5-turbo"
+    assert config.fast_llm == "gpt-3.5-turbo-16k"
+    assert config.smart_llm == "gpt-3.5-turbo-16k"
 
     # Reset config
     config.fast_llm = fast_llm
     config.smart_llm = smart_llm
 
 
-def test_missing_azure_config(workspace: Workspace):
+def test_missing_azure_config(workspace: Workspace) -> None:
     config_file = workspace.get_path("azure_config.yaml")
     with pytest.raises(FileNotFoundError):
         ConfigBuilder.load_azure_config(str(config_file))
@@ -207,11 +208,11 @@ azure_model_map:
 
 def test_create_config_gpt4only(config: Config) -> None:
     with mock.patch("autogpt.llm.api_manager.ApiManager.get_models") as mock_get_models:
-        mock_get_models.return_value = [{"id": GPT_4_MODEL}]
+        mock_get_models.return_value = [{"id": "gpt-4-0314"}]
         create_config(
             config=config,
             continuous=False,
-            continuous_limit=None,
+            continuous_limit=0,
             ai_settings_file=None,
             prompt_settings_file=None,
             skip_reprompt=False,
@@ -224,17 +225,17 @@ def test_create_config_gpt4only(config: Config) -> None:
             allow_downloads=False,
             skip_news=False,
         )
-        assert config.fast_llm == GPT_4_MODEL
-        assert config.smart_llm == GPT_4_MODEL
+        assert config.fast_llm == "gpt-4-0314"
+        assert config.smart_llm == "gpt-4-0314"
 
 
 def test_create_config_gpt3only(config: Config) -> None:
     with mock.patch("autogpt.llm.api_manager.ApiManager.get_models") as mock_get_models:
-        mock_get_models.return_value = [{"id": GPT_3_MODEL}]
+        mock_get_models.return_value = [{"id": "gpt-3.5-turbo-16k"}]
         create_config(
             config=config,
             continuous=False,
-            continuous_limit=None,
+            continuous_limit=0,
             ai_settings_file=None,
             prompt_settings_file=None,
             skip_reprompt=False,
@@ -247,5 +248,5 @@ def test_create_config_gpt3only(config: Config) -> None:
             allow_downloads=False,
             skip_news=False,
         )
-        assert config.fast_llm == GPT_3_MODEL
-        assert config.smart_llm == GPT_3_MODEL
+        assert config.fast_llm == "gpt-3.5-turbo-16k"
+        assert config.smart_llm == "gpt-3.5-turbo-16k"

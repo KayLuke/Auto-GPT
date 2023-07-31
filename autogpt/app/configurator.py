@@ -1,14 +1,13 @@
 """Configurator module."""
 from __future__ import annotations
 
-from typing import Literal
+from typing import Literal, Optional
 
 import click
 from colorama import Back, Fore, Style
 
 from autogpt import utils
 from autogpt.config import Config
-from autogpt.config.config import GPT_3_MODEL, GPT_4_MODEL
 from autogpt.llm.api_manager import ApiManager
 from autogpt.logs import logger
 from autogpt.memory.vector import get_supported_memory_backends
@@ -18,15 +17,15 @@ def create_config(
     config: Config,
     continuous: bool,
     continuous_limit: int,
-    ai_settings_file: str,
-    prompt_settings_file: str,
+    ai_settings_file: Optional[str],
+    prompt_settings_file: Optional[str],
     skip_reprompt: bool,
     speak: bool,
     debug: bool,
     gpt3only: bool,
     gpt4only: bool,
-    memory_type: str,
-    browser_name: str,
+    memory_type: Optional[str],
+    browser_name: Optional[str],
     allow_downloads: bool,
     skip_news: bool,
 ) -> None:
@@ -83,18 +82,18 @@ def create_config(
     # Set the default LLM models
     if gpt3only:
         logger.typewriter_log("GPT3.5 Only Mode: ", Fore.GREEN, "ENABLED")
-        # --gpt3only should always use gpt-3.5-turbo, despite user's FAST_LLM config
-        config.fast_llm = GPT_3_MODEL
-        config.smart_llm = GPT_3_MODEL
+        # --gpt3only should always use gpt-3.5-turbo-16k, ignoring user's FAST_LLM config
+        config.fast_llm = "gpt-3.5-turbo-16k"
+        config.smart_llm = "gpt-3.5-turbo-16k"
     elif (
         gpt4only
-        and check_model(GPT_4_MODEL, model_type="smart_llm", config=config)
-        == GPT_4_MODEL
+        and check_model("gpt-4-0314", model_type="smart_llm", config=config)
+        == "gpt-4-0314"
     ):
         logger.typewriter_log("GPT4 Only Mode: ", Fore.GREEN, "ENABLED")
-        # --gpt4only should always use gpt-4, despite user's SMART_LLM config
-        config.fast_llm = GPT_4_MODEL
-        config.smart_llm = GPT_4_MODEL
+        # --gpt4only should always use gpt-4-0314, ignoring user's SMART_LLM config
+        config.fast_llm = "gpt-4-0314"
+        config.smart_llm = "gpt-4-0314"
     else:
         config.fast_llm = check_model(config.fast_llm, "fast_llm", config=config)
         config.smart_llm = check_model(config.smart_llm, "smart_llm", config=config)
@@ -170,7 +169,7 @@ def check_model(
     model_type: Literal["smart_llm", "fast_llm"],
     config: Config,
 ) -> str:
-    """Check if model is available for use. If not, return gpt-3.5-turbo."""
+    """Check if model is available for use. If not, return gpt-3.5-turbo-16k."""
     openai_credentials = config.get_openai_credentials(model_name)
     api_manager = ApiManager()
     models = api_manager.get_models(**openai_credentials)
@@ -181,7 +180,6 @@ def check_model(
     logger.typewriter_log(
         "WARNING: ",
         Fore.YELLOW,
-        f"You do not have access to {model_name}. Setting {model_type} to "
-        f"gpt-3.5-turbo.",
+        f"You do not have access to {model_name}. Setting {model_type} to gpt-3.5-turbo-16k instead.",
     )
-    return "gpt-3.5-turbo"
+    return "gpt-3.5-turbo-16k"

@@ -20,9 +20,6 @@ AZURE_CONFIG_FILE = "azure.yaml"
 PLUGINS_CONFIG_FILE = "plugins_config.yaml"
 PROMPT_SETTINGS_FILE = "prompt_settings.yaml"
 
-GPT_4_MODEL = "gpt-4"
-GPT_3_MODEL = "gpt-3.5-turbo"
-
 
 class Config(SystemSettings, arbitrary_types_allowed=True):
     name: str = "Auto-GPT configuration"
@@ -49,11 +46,11 @@ class Config(SystemSettings, arbitrary_types_allowed=True):
     # Paths
     ai_settings_file: str = AI_SETTINGS_FILE
     prompt_settings_file: str = PROMPT_SETTINGS_FILE
-    workdir: Path = None
+    workdir: Optional[Path] = None
     workspace_path: Optional[Path] = None
     file_logger_path: Optional[Path] = None
     # Model configuration
-    fast_llm: str = "gpt-3.5-turbo"
+    fast_llm: str = "gpt-3.5-turbo-16k"
     smart_llm: str = "gpt-4-0314"
     temperature: float = 0
     openai_functions: bool = False
@@ -138,7 +135,7 @@ class Config(SystemSettings, arbitrary_types_allowed=True):
     sd_webui_auth: Optional[str] = None
 
     @validator("plugins", each_item=True)
-    def validate_plugins(cls, p: AutoGPTPluginTemplate | Any):
+    def validate_plugins(cls, p: AutoGPTPluginTemplate | Any) -> AutoGPTPluginTemplate:
         assert issubclass(
             p.__class__, AutoGPTPluginTemplate
         ), f"{p} does not subclass AutoGPTPluginTemplate"
@@ -147,7 +144,7 @@ class Config(SystemSettings, arbitrary_types_allowed=True):
         ), f"Plugins must subclass AutoGPTPluginTemplate; {p} is a template instance"
         return p
 
-    def get_openai_credentials(self, model: str) -> dict[str, str]:
+    def get_openai_credentials(self, model: str) -> dict[str, Optional[str]]:
         credentials = {
             "api_key": self.openai_api_key,
             "api_base": self.openai_api_base,
@@ -158,44 +155,45 @@ class Config(SystemSettings, arbitrary_types_allowed=True):
             credentials.update(azure_credentials)
         return credentials
 
-    def get_azure_credentials(self, model: str) -> dict[str, str]:
+    def get_azure_credentials(self, model: str) -> dict[str, Optional[str]]:
         """Get the kwargs for the Azure API."""
 
         # Fix --gpt3only and --gpt4only in combination with Azure
         fast_llm = (
             self.fast_llm
             if not (
-                self.fast_llm == self.smart_llm
-                and self.fast_llm.startswith(GPT_4_MODEL)
+                self.fast_llm == self.smart_llm and self.fast_llm.startswith("gpt-4")
             )
             else f"not_{self.fast_llm}"
         )
         smart_llm = (
             self.smart_llm
             if not (
-                self.smart_llm == self.fast_llm
-                and self.smart_llm.startswith(GPT_3_MODEL)
+                self.smart_llm == self.fast_llm and self.smart_llm.startswith("gpt-3.5")
             )
             else f"not_{self.smart_llm}"
         )
 
-        deployment_id = {
-            fast_llm: self.azure_model_to_deployment_id_map.get(
-                "fast_llm_deployment_id",
-                self.azure_model_to_deployment_id_map.get(
-                    "fast_llm_model_deployment_id"  # backwards compatibility
+        if self.azure_model_to_deployment_id_map is None:
+            deployment_id = None
+        else:
+            deployment_id = {
+                fast_llm: self.azure_model_to_deployment_id_map.get(
+                    "fast_llm_deployment_id",
+                    self.azure_model_to_deployment_id_map.get(
+                        "fast_llm_model_deployment_id"  # backwards compatibility
+                    ),
                 ),
-            ),
-            smart_llm: self.azure_model_to_deployment_id_map.get(
-                "smart_llm_deployment_id",
-                self.azure_model_to_deployment_id_map.get(
-                    "smart_llm_model_deployment_id"  # backwards compatibility
+                smart_llm: self.azure_model_to_deployment_id_map.get(
+                    "smart_llm_deployment_id",
+                    self.azure_model_to_deployment_id_map.get(
+                        "smart_llm_model_deployment_id"  # backwards compatibility
+                    ),
                 ),
-            ),
-            self.embedding_model: self.azure_model_to_deployment_id_map.get(
-                "embedding_model_deployment_id"
-            ),
-        }.get(model, None)
+                self.embedding_model: self.azure_model_to_deployment_id_map.get(
+                    "embedding_model_deployment_id"
+                ),
+            }.get(model, None)
 
         kwargs = {
             "api_type": self.openai_api_type,
