@@ -1,15 +1,6 @@
-# 'dev' or 'release' container build
-ARG BUILD_TYPE=dev
-# Use an official Python base image from the Docker Hub
-FROM python:3.10-slim AS autogpt-base
-# Install browsers
-RUN apt-get update && apt-get install -y \
-    chromium-driver firefox-esr ca-certificates gcc \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
-# Install utilities
-RUN apt-get update && apt-get install -y \
-    curl jq wget git \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE} AS autogpt-base
+ARG BUILD_TYPE
 # Set environment variables
 ENV PIP_NO_CACHE_DIR=yes \
     PYTHONUNBUFFERED=1 \
@@ -32,6 +23,7 @@ CMD ["run", "autogpt", "--install-plugin-deps"]
 
 # dev build -> include everything
 FROM autogpt-base as autogpt-dev
+#RUN poetry lock
 RUN poetry install --no-root
 ONBUILD COPY . ./
 
@@ -45,5 +37,5 @@ ONBUILD COPY prompt_settings.yaml ./prompt_settings.yaml
 ONBUILD COPY README.md ./README.md
 ONBUILD RUN mkdir ./data
 
-FROM autogpt-${BUILD_TYPE} AS autogpt
+FROM autogpt-dev AS autogpt
 RUN poetry install --only-root

@@ -8,7 +8,7 @@ authors = [
 readme = "README.md"
 description = "An Experimental Auto-GPT fork"
 homepage = "https://github.com/lc0rp/Auto-GPT-Turbo"
-requires-python = ">=3.10"
+#requires-python = ">=3.10"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
@@ -21,7 +21,7 @@ autogpt = "autogpt.app.cli:main"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-agent-protocol = "^0.2.3"
+agent-protocol = "*"
 beautifulsoup4 = "^4.12.2"
 charset-normalizer = "^3.1.0"
 click = "*"

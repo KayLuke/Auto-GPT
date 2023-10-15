@@ -1,0 +1,20 @@
+2023-10-15 16:06:52,921 INFO Loading 'turbo prompts'. 
+2023-10-15 16:06:53,015 WARNING  config/plugins_config.yaml does not exist, creating base config.
+2023-10-15 16:06:53,030 INFO WARNING:  You do not have access to gpt-4-0314. Setting smart_llm to gpt-3.5-turbo.
+2023-10-15 16:06:53,269 INFO Skip Re-prompt:  ENABLED
+2023-10-15 16:06:53,396 INFO Using Prompt Settings File: /app/config/personas/turbo/prompts.yaml
+2023-10-15 16:06:53,530 INFO 
+ 
+2023-10-15 16:06:53,562 INFO 3 PERSONAS FOUND:  
+2023-10-15 16:06:53,659 INFO ================================ 
+2023-10-15 16:06:53,694 INFO   [1] - coder.engineer 
+2023-10-15 16:06:53,851 INFO   [2] - coder.v2 
+2023-10-15 16:06:54,015 INFO   [3] - turbo 
+2023-10-15 16:06:54,200 INFO 
+ 
+2023-10-15 16:06:57,876 INFO Loading 'coder.engineer' persona. 
+2023-10-15 16:06:57,993 INFO Loading 'coder.engineer' ai settings. 
+2023-10-15 16:06:58,135 INFO Loading 'coder.engineer prompts'. 
+2023-10-15 16:06:58,280 INFO Skip Re-prompt:  ENABLED
+2023-10-15 16:06:58,370 INFO Using AI Settings File: /app/
+2023-10-15 16:06:58,486 INFO Using Prompt Settings File: 

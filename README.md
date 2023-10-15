@@ -1,3 +1,10 @@
+# Hack of 
+
+from ai-ticket
+`sudo docker-compose up mockopenai`
+
+`sudo docker-compose run  autogpt-turbo`
+
 # Turbo: An Enhanced Auto-GTP v0.4.7 Fork
 
 Turbo is a fork of Auto-GTP v0.4.7, offering the following improvements:

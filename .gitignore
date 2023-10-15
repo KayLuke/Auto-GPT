@@ -10,9 +10,9 @@ last_run_ai_settings.yaml
 .vscode
 .idea/*
 auto-gpt.json
-log.txt
-log-ingestion.txt
-/logs
+#log.txt
+#log-ingestion.txt
+#/logs
 *.log
 *.mp3
 mem.sqlite3
@@ -31,9 +31,9 @@ __pycache__/
 build/
 develop-eggs/
 dist/
-/plugins/
+#/plugins/
 plugins_config.yaml
-config/plugins_config.yaml
+#config/plugins_config.yaml
 downloads/
 eggs/
 .eggs/
